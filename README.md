@@ -55,7 +55,25 @@ Simple. Logical. Nostalgic.
 5. Enjoy a real-time scoreboard, target updates, and instant results.  
 
 ---
+### 🌐 Browser Compatibility Notice
 
+For the best experience, please open **ODDTI™ Web Edition (ODDTI v2.2 web edition.html)**  
+in a **modern desktop browser** such as:
+
+- Google Chrome (v100 or newer)  
+- Mozilla Firefox  
+- Microsoft Edge  
+- Safari (latest macOS or iOS version)
+
+⚠️ Some browsers, extensions, or mobile webviews may block JavaScript or prevent  
+interactive elements from loading correctly.  
+
+If the game screen does not respond or display fully, please ensure:
+- JavaScript is enabled.  
+- The file is **opened locally (via File → Open)**, not previewed inside an app.  
+- You are not running it inside restricted environments like school portals or mobile viewers.
+
+  
 ## 🧾 Features
 
 - 🏏 Full toss, bat, and bowl logic.  
