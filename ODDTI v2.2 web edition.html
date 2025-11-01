@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ODDTI — Hand‑Cricket (v2.2)</title>
+<style>
+:root{--bg:#071827;--muted:#9aa6b2;--accent:#36f0c9;--danger:#ff6b6b}
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+body{margin:0;background:linear-gradient(180deg,#041022,#071827);color:#e9f6f9;padding:18px}
+.container{max-width:1100px;margin:0 auto}
+.header{display:flex;align-items:center;gap:12px}
+h1{margin:0;font-size:20px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));padding:14px;border-radius:12px;margin-top:12px;box-shadow:0 8px 20px rgba(2,6,23,0.6)}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:12px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+.row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.muted{color:var(--muted);font-size:13px}
+.big{font-weight:700;font-size:20px}
+.small{font-size:13px;padding:6px 10px;border-radius:8px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.num-pad{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.nbtn{width:46px;height:46px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);display:grid;place-items:center;font-weight:700;color:inherit}
+.btn-primary{background:var(--accent);color:#022; border:0;padding:8px 12px;border-radius:8px}
+.log{height:220px;overflow:auto;padding:10px;background:rgba(0,0,0,0.12);border-radius:8px;font-family:monospace;font-size:13px}
+.status-bubble{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700}
+.kv{display:flex;flex-direction:column}
+.center{display:flex;align-items:center;gap:8px}
+.series-log{max-height:120px;overflow:auto;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;font-size:13px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.badge{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:13px}
+.hidden{display:none}
+.last-ball{margin-top:8px;padding:8px;background:rgba(0,0,0,0.06);border-radius:8px;font-family:monospace}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header"><h1>⚡ ODDTI — Hand‑Cricket (v2.2)</h1><div class="muted">Next‑Match reset • Last‑ball display • Win margin</div></div>
+
+  <div class="card">
+    <div class="controls">
+      <label>Mode: <select id="mode"><option value="single">Single Match</option><option value="series">Best of 3</option></select></label>
+      <button id="newGame" class="btn-primary">New Game</button>
+      <div style="margin-left:auto" class="muted">Save & open in Safari/Chrome</div>
+    </div>
+
+    <div class="grid">
+      <!-- Main play area -->
+      <div>
+        <div class="card" style="margin-top:12px">
+          <div class="row"><div class="kv"><span class="muted">Match</span><span id="matchLabel" class="big">—</span></div>
+            <div class="kv"><span class="muted">Status</span><span id="statusLabel" class="status-bubble">Idle</span></div>
+            <div class="kv"><span class="muted">Current action</span><span id="currentAction" class="muted">—</span></div></div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+            <div style="flex:1">
+              <div class="row"><div class="muted">Toss Call</div><div id="tossCall" class="big muted">—</div></div>
+              <div class="row"><div class="muted">Toss Result</div><div id="tossResult" class="big muted">—</div></div>
+            </div>
+            <div style="width:220px">
+              <div class="row"><div class="muted">Toss controls</div><div class="muted"><select id="callSelect"><option>odd</option><option>even</option></select></div></div>
+              <div class="row"><div class="muted">Toss number</div><div><select id="tossNum"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div></div>
+              <div style="margin-top:8px" class="center"><button id="doToss" class="small">Do Toss</button><button id="cpuToss" class="small">CPU Toss</button></div>
+            </div>
+          </div>
+
+          <hr>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1" class="card">
+              <div class="row"><div class="muted">Player</div><div class="big" id="playerScore">0</div></div>
+              <div class="row"><div class="muted">Player Balls</div><div id="playerBalls" class="muted">0</div></div>
+              <div class="row"><div class="muted">Player Status</div><div id="playerStatus" class="muted">—</div></div>
+            </div>
+
+            <div style="flex:1" class="card">
+              <div class="row"><div class="muted">Computer</div><div class="big" id="cpuScore">0</div></div>
+              <div class="row"><div class="muted">CPU Balls</div><div id="cpuBalls" class="muted">0</div></div>
+              <div class="row"><div class="muted">CPU Status</div><div id="cpuStatus" class="muted">—</div></div>
+            </div>
+
+            <div style="width:220px" class="card">
+              <div class="row"><div class="muted">Target</div><div id="target" class="big muted">—</div></div>
+              <div class="row"><div class="muted">Runs required</div><div id="runsRequired" class="big muted">—</div></div>
+              <div class="row"><div class="muted">Innings</div><div id="inningsLabel" class="muted">—</div></div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px" id="batBowlArea" class="controls">
+            <button id="batFirst">Bat First</button>
+            <button id="bowlFirst">Bowl First</button>
+            <button id="toggleAuto" class="small">Toggle Auto-CPU (off)</button>
+          </div>
+
+          <div id="playArea" style="margin-top:12px;display:none" class="card">
+            <div class="muted">Pick a number (0–6) then press Submit. When batting only your number counts as runs; out if equal.</div>
+            <div class="num-pad" id="numPad">
+              <button class="nbtn" data-num="0">0</button><button class="nbtn" data-num="1">1</button><button class="nbtn" data-num="2">2</button>
+              <button class="nbtn" data-num="3">3</button><button class="nbtn" data-num="4">4</button><button class="nbtn" data-num="5">5</button><button class="nbtn" data-num="6">6</button>
+            </div>
+            <div style="margin-top:10px" class="center">
+              <button id="submit" class="btn-primary">Submit Number</button>
+              <button id="forceEnd">End Innings</button>
+            </div>
+            <div id="lastBall" class="last-ball">Last ball: —</div>
+          </div>
+
+          <div id="postMatchArea" style="margin-top:12px;display:none" class="card">
+            <div class="row"><div class="muted">Match result</div><div id="matchResult" class="big muted">—</div></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="nextMatch" class="small hidden">Next Match</button>
+              <button id="newMatchBtn" class="small">New Match</button>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="row"><div class="muted">Play-by-play Log</div><div class="muted">Recent actions</div></div>
+          <div id="log" class="log">Ready.</div>
+        </div>
+      </div>
+
+      <!-- Right column: series & controls -->
+      <aside>
+        <div class="card">
+          <div class="row"><div class="muted">Series</div><div id="seriesScore" class="big muted">You 0 - 0 CPU</div></div>
+          <div id="seriesLog" class="series-log">No matches played</div>
+          <div style="margin-top:10px" class="legend">
+            <div class="badge">Single / Best‑of‑3</div>
+            <div class="badge">Player batting: your number counts</div>
+            <div class="badge">CPU batting: CPU number counts</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="muted">Quick Controls</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button id="showScore" class="small">Show Scorecard</button>
+            <button id="resetAll" class="small">Reset All</button>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const VALID=[0,1,2,3,4,5,6];
+  // Elements
+  const modeSel = document.getElementById('mode');
+  const newGameBtn = document.getElementById('newGame');
+  const doTossBtn = document.getElementById('doToss');
+  const cpuTossBtn = document.getElementById('cpuToss');
+  const callSelect = document.getElementById('callSelect');
+  const tossNum = document.getElementById('tossNum');
+  const tossCallEl = document.getElementById('tossCall');
+  const tossResultEl = document.getElementById('tossResult');
+  const statusEl = document.getElementById('statusLabel');
+  const currentAction = document.getElementById('currentAction');
+  const matchLabel = document.getElementById('matchLabel');
+  const playerScoreEl = document.getElementById('playerScore');
+  const cpuScoreEl = document.getElementById('cpuScore');
+  const playerBallsEl = document.getElementById('playerBalls');
+  const cpuBallsEl = document.getElementById('cpuBalls');
+  const playerStatusEl = document.getElementById('playerStatus');
+  const cpuStatusEl = document.getElementById('cpuStatus');
+  const targetEl = document.getElementById('target');
+  const runsReqEl = document.getElementById('runsRequired');
+  const inningsLabel = document.getElementById('inningsLabel');
+  const batFirstBtn = document.getElementById('batFirst');
+  const bowlFirstBtn = document.getElementById('bowlFirst');
+  const playArea = document.getElementById('playArea');
+  const numPad = document.getElementById('numPad');
+  const submitBtn = document.getElementById('submit');
+  const forceEndBtn = document.getElementById('forceEnd');
+  const toggleAutoBtn = document.getElementById('toggleAuto');
+  const logEl = document.getElementById('log');
+  const seriesScoreEl = document.getElementById('seriesScore');
+  const seriesLogEl = document.getElementById('seriesLog');
+  const showScoreBtn = document.getElementById('showScore');
+  const resetAllBtn = document.getElementById('resetAll');
+  const postMatchArea = document.getElementById('postMatchArea');
+  const matchResultEl = document.getElementById('matchResult');
+  const nextMatchBtn = document.getElementById('nextMatch');
+  const newMatchBtn = document.getElementById('newMatchBtn');
+  const lastBallEl = document.getElementById('lastBall');
+
+  let state = null;
+  let selected = null;
+  let autoCPU = false;
+  let tossDone = false; // ensure toss only once per match
+
+  function appendLog(msg){
+    const t = new Date().toLocaleTimeString();
+    logEl.innerHTML = `<div>[${t}] ${msg}</div>` + logEl.innerHTML;
+  }
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function resetAll(){
+    state = {
+      mode: modeSel.value,
+      match: 0,
+      series: [],
+      playerWins: 0,
+      cpuWins: 0,
+      current: null
+    };
+    selected = null;
+    autoCPU = false;
+    tossDone = false;
+    updateUI(true);
+    appendLog('Reset complete. Click New Game to start.');
+  }
+
+  function updateUI(full=false){
+    matchLabel.textContent = state.match ? `Match ${state.match}` : '—';
+    seriesScoreEl.textContent = `You ${state.playerWins} - ${state.cpuWins} CPU`;
+    seriesLogEl.textContent = state.series.length ? state.series.map((m,i)=>`Match ${i+1}: ${m.winner} ${m.playerScore}-${m.cpuScore}`).join('\\n') : 'No matches yet';
+    if(!state.current){ statusEl.textContent = 'Idle'; currentAction.textContent='—'; playerStatusEl.textContent='—'; cpuStatusEl.textContent='—'; targetEl.textContent='—'; runsReqEl.textContent='—'; inningsLabel.textContent='—'; playerScoreEl.textContent='0'; cpuScoreEl.textContent='0'; playerBallsEl.textContent='0'; cpuBallsEl.textContent='0'; postMatchArea.style.display='none'; lastBallEl.textContent='Last ball: —'; return; }
+
+    const cur = state.current;
+    statusEl.textContent = cur.status || 'Playing';
+    currentAction.textContent = cur.action || '—';
+    playerScoreEl.textContent = cur.playerScore;
+    cpuScoreEl.textContent = cur.cpuScore;
+    playerBallsEl.textContent = cur.playerBalls;
+    cpuBallsEl.textContent = cur.cpuBalls;
+    playerStatusEl.textContent = cur.playerRole || '—';
+    cpuStatusEl.textContent = cur.cpuRole || '—';
+    targetEl.textContent = cur.target===null? '—' : cur.target;
+    inningsLabel.textContent = cur.innings || '—';
+    lastBallEl.textContent = cur.lastBall ? `Last ball: ${cur.lastBall}` : 'Last ball: —';
+
+    // runs required: if second innings, show required for chasing side
+    if(cur.target !== null && cur.innings === 'second'){
+      if(cur.batting === 'player'){
+        const req = Math.max(0, (cur.target + 1) - cur.playerScore);
+        runsReqEl.textContent = req + ' (Player chasing)';
+      } else {
+        const req = Math.max(0, (cur.target + 1) - cur.cpuScore);
+        runsReqEl.textContent = req + ' (CPU chasing)';
+      }
+    } else runsReqEl.textContent = '—';
+
+    // Disable toss buttons after tossDone
+    document.getElementById('doToss').disabled = tossDone;
+    document.getElementById('cpuToss').disabled = tossDone;
+
+    // Show play area while match is in progress (first or second innings) and hide only after match ended or before toss
+    if(cur.status && cur.status.startsWith('Match ended')){
+      playArea.style.display = 'none';
+      postMatchArea.style.display = 'block';
+      matchResultEl.textContent = cur.status.replace('Match ended: ',''); // show winner
+      // Show nextMatch only if series mode and series not finished
+      if(state.mode==='series' && (state.playerWins<2 && state.cpuWins<2) && state.series.length < 3){
+        nextMatchBtn.classList.remove('hidden');
+      } else {
+        nextMatchBtn.classList.add('hidden');
+      }
+    } else if(cur.status && cur.status.includes('Toss pending')){
+      // before toss, hide play area
+      playArea.style.display = 'none';
+      postMatchArea.style.display = 'none';
+    } else {
+      postMatchArea.style.display = 'none';
+      playArea.style.display = 'block';
+    }
+  }
+
+  function newGame(){
+    resetAll();
+    state.match += 1;
+    state.current = {
+      playerScore:0, cpuScore:0, playerBalls:0, cpuBalls:0,
+      playerRole:'—', cpuRole:'—',
+      batting:null, innings:'first', target:null, status:'Toss pending', action:'Awaiting toss',
+      tossWinner:null, lastBall:null
+    };
+    tossDone = false;
+    appendLog('Match '+state.match+' started. Make toss call.');
+    updateUI();
+    // enable toss buttons
+    document.getElementById('doToss').disabled = false;
+    document.getElementById('cpuToss').disabled = false;
+    // disable bat/bowl choice until player actually wins toss
+    document.getElementById('batFirst').disabled = true;
+    document.getElementById('bowlFirst').disabled = true;
+  }
+
+  function doToss(manual=true){
+    if(!state.current) return appendLog('Start a game first');
+    if(tossDone) return appendLog('Toss already done this match.');
+    const call = callSelect.value;
+    const pnum = parseInt(tossNum.value,10);
+    const cnum = rand(VALID);
+    const s = pnum + cnum;
+    const parity = (s % 2 === 0) ? 'even' : 'odd';
+    tossCallEl.textContent = call;
+    tossResultEl.textContent = `You:${pnum} CPU:${cnum} → ${parity}`;
+    tossDone = true;
+    state.current.tossWinner = (parity === call) ? 'player' : 'cpu';
+    appendLog(`Toss result: ${tossResultEl.textContent}`);
+    if(state.current.tossWinner === 'player'){
+      state.current.status = 'You won toss — choose Bat/Bowl';
+      state.current.action = 'Awaiting player choice';
+      // enable player choice buttons
+      document.getElementById('batFirst').disabled = false;
+      document.getElementById('bowlFirst').disabled = false;
+    } else {
+      state.current.status = 'CPU won toss';
+      state.current.action = 'CPU deciding...';
+      document.getElementById('batFirst').disabled = true;
+      document.getElementById('bowlFirst').disabled = true;
+      appendLog('CPU won toss. CPU choosing...');
+      const cchoice = rand(['bat','bowl']);
+      appendLog('CPU chooses to ' + cchoice + ' first.');
+      // Start innings after short delay to show logs
+      setTimeout(()=> startInnings(cchoice === 'bat' ? 'cpu' : 'player'), 700);
+    }
+    updateUI();
+  }
+
+  function startInnings(firstBat){
+    const cur = state.current;
+    cur.batting = firstBat; // 'player' or 'cpu'
+    cur.innings = 'first';
+    cur.playerScore = 0; cur.cpuScore = 0; cur.playerBalls = 0; cur.cpuBalls = 0; cur.target = null;
+    cur.playerRole = firstBat === 'player' ? 'batting' : 'bowling';
+    cur.cpuRole = firstBat === 'cpu' ? 'batting' : 'bowling';
+    cur.status = (firstBat==='player') ? 'Player batting (1st innings)' : 'CPU batting (1st innings)';
+    cur.action = (firstBat==='player') ? 'Player to play' : 'CPU to play';
+    cur.lastBall = null;
+    // Once innings start, lock toss buttons fully
+    tossDone = true;
+    document.getElementById('doToss').disabled = true;
+    document.getElementById('cpuToss').disabled = true;
+    // disable bat/bowl choice
+    document.getElementById('batFirst').disabled = true;
+    document.getElementById('bowlFirst').disabled = true;
+    playArea.style.display = 'block';
+    updateUI();
+    appendLog(cur.status);
+    if(autoCPU && cur.batting === 'cpu'){
+      setTimeout(cpuAutoPlay, 600);
+    }
+  }
+
+  function padClick(e){
+    const b = e.target.closest('button'); if(!b) return;
+    const n = b.dataset.num; if(n===undefined) return;
+    selected = parseInt(n,10);
+    Array.from(numPad.querySelectorAll('button')).forEach(x=>x.style.outline='');
+    b.style.outline = '2px solid rgba(255,255,255,0.12)';
+    appendLog('Selected ' + selected);
+  }
+
+  function submitNumber(){
+    if(!state.current) return appendLog('Start a match first');
+    if(selected === null) return appendLog('Choose a number first');
+    const cur = state.current;
+    const p = selected;
+    const c = rand(VALID);
+    // record last ball for UI
+    if(cur.innings === 'first'){
+      if(cur.batting === 'player'){
+        cur.playerBalls += 1;
+        cur.lastBall = `Player ${p} - CPU ${c}`;
+        appendLog(`You bat: ${p} | CPU bowls: ${c}`);
+        if(p === c){ appendLog('OUT! End of innings.'); endFirstInnings(); selected=null; updateUI(); return; }
+        cur.playerScore += p;
+        appendLog(`+${p}. Player total ${cur.playerScore}`);
+      } else {
+        cur.cpuBalls += 1;
+        cur.lastBall = `CPU ${c} - Player ${p}`;
+        appendLog(`CPU bats: ${c} | You bowl: ${p}`);
+        if(c === p){ appendLog('CPU OUT! End of innings.'); endFirstInnings(); selected=null; updateUI(); return; }
+        cur.cpuScore += c;
+        appendLog(`CPU +${c}. CPU total ${cur.cpuScore}`);
+      }
+    } else {
+      // second innings - chase
+      if(cur.batting === 'player'){
+        cur.playerBalls += 1;
+        cur.lastBall = `Player ${p} - CPU ${c}`;
+        appendLog(`You bat: ${p} | CPU bowls: ${c}`);
+        if(p === c){ appendLog('OUT!'); endSecondInnings(); selected=null; updateUI(); return; }
+        cur.playerScore += p;
+        appendLog(`+${p}. Player total ${cur.playerScore}`);
+        const req = (cur.target + 1) - cur.playerScore;
+        if(req <= 0){ appendLog('Target achieved! You win.'); finishMatch('Player'); selected=null; updateUI(); return; }
+        appendLog(`Runs required: ${req}`);
+      } else {
+        cur.cpuBalls += 1;
+        cur.lastBall = `CPU ${c} - Player ${p}`;
+        appendLog(`CPU bats: ${c} | You bowl: ${p}`);
+        if(c === p){ appendLog('CPU OUT!'); endSecondInnings(); selected=null; updateUI(); return; }
+        cur.cpuScore += c;
+        appendLog(`CPU +${c}. CPU total ${cur.cpuScore}`);
+        const req = (cur.target + 1) - cur.cpuScore;
+        if(req <= 0){ appendLog('CPU reached target! CPU wins.'); finishMatch('CPU'); selected=null; updateUI(); return; }
+        appendLog(`CPU runs required: ${req}`);
+      }
+    }
+    selected = null;
+    Array.from(numPad.querySelectorAll('button')).forEach(b=>b.style.outline='');
+    updateUI();
+  }
+
+  function endFirstInnings(){
+    const cur = state.current;
+    cur.innings = 'second';
+    if(cur.batting === 'player'){
+      cur.target = cur.playerScore;
+      appendLog('CPU needs ' + (cur.target + 1) + ' to win.');
+      cur.batting = 'cpu';
+      cur.playerRole = 'bowling'; cur.cpuRole = 'batting';
+      cur.status = 'CPU to chase (2nd innings)';
+      cur.action = 'CPU to play';
+    } else {
+      cur.target = cur.cpuScore;
+      appendLog('You need ' + (cur.target + 1) + ' to win.');
+      cur.batting = 'player';
+      cur.playerRole = 'batting'; cur.cpuRole = 'bowling';
+      cur.status = 'Player to chase (2nd innings)';
+      cur.action = 'Player to play';
+    }
+    cur.lastBall = null;
+    updateUI();
+    if(autoCPU && cur.batting === 'cpu') setTimeout(cpuAutoPlay, 600);
+  }
+
+  function endSecondInnings(){
+    const cur = state.current;
+    if(cur.playerScore > cur.cpuScore) finishMatch('Player');
+    else if(cur.cpuScore > cur.playerScore) finishMatch('CPU');
+    else finishMatch('Tie');
+  }
+
+  function finishMatch(winner){
+    const cur = state.current;
+    let msg = '';
+    if(winner === 'Player'){
+      const margin = cur.playerScore - cur.cpuScore;
+      msg = margin > 0 ? `You won by ${margin} runs` : 'You won';
+    } else if(winner === 'CPU'){
+      const margin = cur.cpuScore - cur.playerScore;
+      msg = margin > 0 ? `CPU won by ${margin} runs` : 'CPU won';
+    } else msg = 'Match tied';
+    cur.status = 'Match ended: ' + msg;
+    appendLog(cur.status);
+    state.series.push({winner, playerScore: cur.playerScore, cpuScore: cur.cpuScore});
+    if(winner === 'Player') state.playerWins += 1;
+    if(winner === 'CPU') state.cpuWins += 1;
+    // disable play area
+    playArea.style.display = 'none';
+    // enable post-match controls
+    updateUI();
+  }
+
+  function cpuAutoPlay(){
+    if(!state.current) return;
+    const cur = state.current;
+    if(cur.batting !== 'cpu') return;
+    const c = rand(VALID);
+    const p = rand(VALID);
+    cur.cpuBalls += 1;
+    cur.lastBall = `CPU ${c} - Player ${p}`;
+    appendLog(`CPU bats: ${c} | Player bowls: ${p}`);
+    if(c === p){
+      appendLog('CPU OUT! End of innings.');
+      endFirstInnings();
+      return;
+    } else {
+      cur.cpuScore += c;
+      appendLog(`CPU +${c} (Total ${cur.cpuScore})`);
+    }
+    updateUI();
+    if(autoCPU) setTimeout(cpuAutoPlay, 600);
+  }
+
+  // UI hooks
+  newGameBtn.addEventListener('click', newGame);
+  doTossBtn.addEventListener('click', ()=>doToss(true));
+  cpuTossBtn.addEventListener('click', ()=>doToss(false));
+  document.getElementById('batFirst').addEventListener('click', ()=>{
+    if(!state.current || state.current.tossWinner!=='player') return appendLog('You can only pick Bat/Bowl if you won the toss.');
+    startInnings('player');
+  });
+  document.getElementById('bowlFirst').addEventListener('click', ()=>{
+    if(!state.current || state.current.tossWinner!=='player') return appendLog('You can only pick Bat/Bowl if you won the toss.');
+    startInnings('cpu');
+  });
+  numPad.addEventListener('click', padClick);
+  submitBtn.addEventListener('click', submitNumber);
+  forceEndBtn.addEventListener('click', ()=>{
+    if(!state.current) return appendLog('No innings active');
+    if(state.current.innings === 'first') endFirstInnings();
+    else endSecondInnings();
+  });
+  toggleAutoBtn.addEventListener('click', ()=>{
+    autoCPU = !autoCPU;
+    toggleAutoBtn.textContent = 'Toggle Auto-CPU (' + (autoCPU ? 'on' : 'off') + ')';
+    appendLog('Auto-CPU ' + (autoCPU ? 'enabled' : 'disabled'));
+    if(autoCPU && state.current && state.current.batting === 'cpu') setTimeout(cpuAutoPlay, 600);
+  });
+
+  nextMatchBtn.addEventListener('click', ()=>{
+    // start next match if in series and not finished
+    if(state.mode !== 'series') return appendLog('Not in series mode.');
+    if(state.playerWins===2 || state.cpuWins===2) return appendLog('Series already decided.');
+    if(state.series.length >= 3) return appendLog('Maximum matches played.');
+    // start next match: reset toss/innings but keep series score
+    state.match += 1;
+    state.current = {
+      playerScore:0, cpuScore:0, playerBalls:0, cpuBalls:0,
+      playerRole:'—', cpuRole:'—', batting:null, innings:'first', target:null,
+      status:'Toss pending', action:'Awaiting toss', tossWinner:null, lastBall:null
+    };
+    tossDone = false;
+    // ensure playArea hidden until toss
+    playArea.style.display = 'none';
+    document.getElementById('doToss').disabled = false;
+    document.getElementById('cpuToss').disabled = false;
+    appendLog('Starting next match: Match ' + state.match + ' — toss pending');
+    updateUI();
+  });
+
+  newMatchBtn.addEventListener('click', ()=>{
+    resetAll();
+    state.match = 1;
+    state.current = {
+      playerScore:0, cpuScore:0, playerBalls:0, cpuBalls:0,
+      playerRole:'—', cpuRole:'—', batting:null, innings:'first', target:null,
+      status:'Toss pending', action:'Awaiting toss', tossWinner:null, lastBall:null
+    };
+    tossDone = false;
+    document.getElementById('doToss').disabled = false;
+    document.getElementById('cpuToss').disabled = false;
+    playArea.style.display = 'none';
+    appendLog('Fresh match started.');
+    updateUI();
+  });
+
+  showScoreBtn.addEventListener('click', ()=>{
+    if(!state.series.length) return alert('No matches yet');
+    alert(state.series.map((m,i)=>`Match ${i+1}: ${m.winner} ${m.playerScore}-${m.cpuScore}`).join('\\n'));
+  });
+
+  resetAllBtn.addEventListener('click', ()=>{ if(confirm('Reset all?')) resetAll(); });
+
+  // init
+  resetAll();
+})();
+</script>
+</body>
+</html>
