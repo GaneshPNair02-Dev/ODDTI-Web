@@ -1,0 +1,45 @@
+⚡ ODDTI™ — The Odd/Even Hand Cricket Game  
+Version: v2.3 Predictor Edition & Web Edition  
+Author: Ganesh P. Nair (⚡GPN⚡)  
+Co-Developer: ChatGPT (OpenAI)  
+Release Year: 2025  
+
+------------------------------------------------------------
+License Type: GPN Proprietary – Educational & Personal Use Only
+------------------------------------------------------------
+
+Copyright © 2025 Ganesh P. Nair. All rights reserved.
+
+This software and all associated assets (including source code, documentation,
+manuals, images, and audio files) are the intellectual property of
+Ganesh P. Nair (⚡GPN⚡). Redistribution, modification, or commercial use
+of any part of this project is strictly prohibited without prior written consent.
+
+You are permitted to:
+- Download and use this software for **personal, educational, or demonstrative** purposes.  
+- Share direct links to the official GitHub repository for reference or learning.  
+- Use it as a study resource to understand Python, HTML, or logic-based game development.
+
+You are NOT permitted to:
+- Sell, repackage, or distribute this software or its derivatives.  
+- Claim ownership or authorship of this software, its logo, or name.  
+- Remove or alter copyright, attribution, or version information.  
+- Use the software or any derivative work for political or commercial promotion.
+
+------------------------------------------------------------
+Special Notes
+------------------------------------------------------------
+• This project is intended for TI Graphing Calculators with Python support
+  and general-purpose PCs with Python 3.8+ environments.  
+• ODDTI™ is a non-commercial creative project built as part of
+  GPN’s educational portfolio.  
+• The name, logo, and associated materials are protected under
+  the “GPN Proprietary License – Educational & Personal Use Only”.
+
+For permissions, inquiries, or collaboration requests:
+📧 Email: ganeshpnair793@gmail.com  
+🌐 Repository: github.com/GaneshPNair02-Dev/ODDTI-v2.3  
+
+------------------------------------------------------------
+End of License
+------------------------------------------------------------
