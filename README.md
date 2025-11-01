@@ -5,8 +5,15 @@
 **Build:** Web Edition (HTML, CSS, JS)  
 **Release Year:** 2025  
 
----
-
+-----
+![Static Badge](https://img.shields.io/badge/Language-HTML%2FJS-blue?style=for-the-badge&logo=javascript)
+![Static Badge](https://img.shields.io/badge/Edition-Web%20Edition-green?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Status-Stable-brightgreen?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Version-v2.2-yellow?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Platform-Browser%20(Offline)-orange?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/Developer-%E2%9A%A1%20GPN%20%E2%9A%A1-lightgrey?style=for-the-badge)
+------
 ## 🎯 About the Game
 
 **ODDTI™** (read as *Oddity*) is a digital recreation of one of India’s simplest yet most beloved childhood games — **Odd/Even Hand Cricket**.  
