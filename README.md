@@ -45,14 +45,17 @@ Simple. Logical. Nostalgic.
 | Storage | No installation required |
 
 ---
+##🕹️ How to Play
+	1.	Download the game file named ODDTI v2.2 web edition.html from this repository.
+	2.	Locate the file on your computer (in Downloads or the folder you saved it to).
+	3.	Open the file using a supported browser such as Google Chrome, Microsoft Edge, Mozilla Firefox, or Safari.
+	4.	When the page opens, click Start Game.
+	5.	Choose Odd or Even for the toss and select any number between 0 and 6.
+	6.	Follow the on-screen instructions to bat or bowl.
+	7.	The game will show your current score, target, and live results automatically.
+	8.	No installation or internet connection is required once the file is downloaded.
 
-## 🕹️ How to Play
-
-1. Visit: **[ODDTI Web Edition on GitHub Pages](https://ganeshpnair.github.io/ODDTI-Web)** *(replace with your actual repo URL)*  
-2. Click **Start Game**.  
-3. Choose *Odd* or *Even* for toss, select your number, and play.  
-4. Follow on-screen instructions to bat or bowl.  
-5. Enjoy a real-time scoreboard, target updates, and instant results.  
+💡 Tip: You can copy the HTML file to a USB drive or share it with friends; it runs offline on any modern computer browser.
 
 ---
 ### 🌐 Browser Compatibility Notice
