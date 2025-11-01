@@ -14,6 +14,21 @@
 ![Static Badge](https://img.shields.io/badge/Platform-Browser%20(Offline)-orange?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/Developer-%E2%9A%A1%20GPN%20%E2%9A%A1-lightgrey?style=for-the-badge)
 ------
+---
+
+### 🎮 Play Online
+> **Live Web Edition:**  
+> 🔗 [https://ganeshpnair02-dev.github.io/ODDTI-Web/](https://ganeshpnair02-dev.github.io/ODDTI-Web/)
+
+**Works best on:**  
+🌐 Chrome, Safari, Edge (latest versions)  
+💻 Desktop recommended for full UI stability  
+📱 Mobile browsers supported but may require horizontal orientation
+
+🧩 *If the page shows code instead of game:*  
+Re-download the `index.html` file or reload the page — GitHub Pages may take a few seconds to render your updates.
+
+---
 ## 🎯 About the Game
 
 **ODDTI™** (read as *Oddity*) is a digital recreation of one of India’s simplest yet most beloved childhood games — **Odd/Even Hand Cricket**.  
